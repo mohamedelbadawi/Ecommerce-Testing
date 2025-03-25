@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 public class RegisterTest extends BaseTest {
     private SignupPage signupPage;
     private HomePage homePage;
+    private boolean isLoggedIn;
 
     @BeforeMethod
     public void setup() {
@@ -57,11 +58,32 @@ public class RegisterTest extends BaseTest {
                 .clickCreateAccount();
         Assert.assertTrue(signupPage.isAccountCreatedConfirmationDisplayed(), "Account creation failed");
         signupPage.clickContinueButton();
-        Assert.assertTrue(homePage.isUserLoggedIn(), "User is not logged in!");
+        isLoggedIn = homePage.isUserLoggedIn();
+        Assert.assertTrue(isLoggedIn, "User is not logged in!");
     }
+
+    @DataProvider(name = "AlreadyRegisteredUserData")
+    public Object[][] getAlreadyRegisteredUserData() {
+        return new Object[][]{
+                {"Mohamed", "loginUser@test.com"}
+
+        };
+    }
+
+    @Test(dataProvider = "AlreadyRegisteredUserData", description = "Test Case 5: Register User with existing email")
+    public void testRegisterUserWithExistingEmail(String signupName, String signupEmail) {
+        softAssert.assertTrue(homePage.isHomePage(), "Home page is not displayed!");
+        homePage.clickLoginRegisterUrl();
+        softAssert.assertTrue(signupPage.isSignupTitleDisplayed(), "Signup page title is missing!");
+        signupPage.enterSignupEmail(signupEmail).enterSignupName(signupName).clickSignupButton();
+        Assert.assertTrue(signupPage.isAlreadyExistsMessageDisplayed(), "AlreadyExists message not displayed!");
+    }
+
 
     @AfterMethod
     public void deleteAccount() {
-        homePage.clickDeleteAccountButton();
+        if (isLoggedIn) {
+            homePage.clickDeleteAccountButton();
+        }
     }
 }

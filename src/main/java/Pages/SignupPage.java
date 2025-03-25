@@ -27,6 +27,7 @@ public class SignupPage extends BasePage {
     private final By createAccountButton = By.cssSelector("[data-qa='create-account']");
     private final By accountCreatedConfirmation = By.cssSelector("[data-qa='account-created']");
     private final By continueButton = By.cssSelector("[data-qa='continue-button']");
+    private final By emailAlreadyExistsMessage = By.xpath("//p[contains(text(),'Email Address already exist!')]");
 
     public SignupPage(WebDriver driver) {
         super(driver);
@@ -139,5 +140,10 @@ public class SignupPage extends BasePage {
     public SignupPage clickContinueButton() {
         click(driver.findElement(continueButton));
         return this;
+    }
+
+    public boolean isAlreadyExistsMessageDisplayed() {
+        waitForVisible(driver.findElement(emailAlreadyExistsMessage));
+        return driver.findElement(emailAlreadyExistsMessage).isDisplayed();
     }
 }
