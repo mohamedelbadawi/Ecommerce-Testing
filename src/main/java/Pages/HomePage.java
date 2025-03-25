@@ -4,10 +4,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 public class HomePage extends BasePage {
-    private final By loginRegisterUrl = By.xpath("//a[contains(text(),'Login')]");
-    private final By logoutButton = By.xpath("//a[contains(text(),'Logout')]");
-    private final By loggedInButton = By.xpath("//a[contains(text(),'Logged in as')]");
-    private final By deleteAccountButton = By.xpath("//a[contains(text(),'Delete Account')]");
+    private final By loginRegisterUrl = By.xpath("//a[contains(normalize-space(),'Login')]");
+    private final By logoutButton = By.xpath("//a[contains(normalize-space(),'Logout')]");
+    private final By loggedInButton = By.xpath("//a[contains(normalize-space(),'Logged in as')]");
+    private final By deleteAccountButton = By.xpath("//a[contains(normalize-space(),'Delete Account')]");
+    private final By contactUsButton = By.xpath("//a[contains(normalize-space(),'Contact us')]");
 
     public HomePage(WebDriver driver) {
         super(driver);
@@ -36,6 +37,11 @@ public class HomePage extends BasePage {
 
     public HomePage clickDeleteAccountButton() {
         click(driver.findElement(deleteAccountButton));
+        return this;
+    }
+
+    public HomePage clickContactUsButton() {
+        click(driver.findElement(contactUsButton));
         return this;
     }
 }
