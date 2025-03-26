@@ -9,19 +9,18 @@ public class HomePage extends BasePage {
     private final By loggedInButton = By.xpath("//a[contains(normalize-space(),'Logged in as')]");
     private final By deleteAccountButton = By.xpath("//a[contains(normalize-space(),'Delete Account')]");
     private final By contactUsButton = By.xpath("//a[contains(normalize-space(),'Contact us')]");
+    private final By productsButton = By.xpath("//a[contains(normalize-space(),'Products')]");
 
     public HomePage(WebDriver driver) {
         super(driver);
     }
 
-    public HomePage clickLoginRegisterUrl() {
+    public void clickLoginRegisterUrl() {
         click(driver.findElement(loginRegisterUrl));
-        return this;
     }
 
-    public HomePage clickLogoutButton() {
+    public void clickLogoutButton() {
         click(driver.findElement(logoutButton));
-        return this;
     }
 
     public boolean isUserLoggedIn() {
@@ -35,13 +34,16 @@ public class HomePage extends BasePage {
         return title.equals("Automation Exercise");
     }
 
-    public HomePage clickDeleteAccountButton() {
+    public void clickDeleteAccountButton() {
         click(driver.findElement(deleteAccountButton));
-        return this;
     }
 
-    public HomePage clickContactUsButton() {
+    public void clickContactUsButton() {
         click(driver.findElement(contactUsButton));
-        return this;
     }
+
+    public void clickProductsButton() {
+        click(driver.findElement(productsButton));
+    }
+
 }
