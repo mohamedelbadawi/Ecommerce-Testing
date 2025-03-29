@@ -3,6 +3,7 @@ package Pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -17,6 +18,10 @@ public class ProductsPage extends BasePage {
     private final By searchButton = By.id("submit_search");
     private final By searchResult = By.cssSelector(".features_items .single-products");
     private final By searchedProductName = By.cssSelector(".productinfo p");
+    private final By singleProduct = By.cssSelector(".features_items .col-sm-4 .single-products");
+    private final By singleProductAddToCartButton = By.cssSelector(".product-overlay .add-to-cart");
+    private final By continueButton = By.cssSelector("#cartModal .btn-success");
+    private final By viewCartButton = By.cssSelector("#cartModal .modal-body a");
 
     public ProductsPage(WebDriver driver) {
         super(driver);
@@ -99,5 +104,29 @@ public class ProductsPage extends BasePage {
             }
         }
         return true;
+    }
+
+
+    public void clickViewCartButton() {
+        click(driver.findElement(viewCartButton));
+    }
+
+    public ProductsPage hoverOverProductsAndAddToCart(Integer productsNumber) {
+        List<WebElement> products = driver.findElements(singleProduct);
+
+        productsNumber = Math.min(productsNumber, products.size());
+
+        Actions actions = new Actions(driver);
+
+        for (int i = 0; i < productsNumber; i++) {
+            scrollToElement(products.get(i));
+            actions.moveToElement(products.get(i)).perform();
+            click(products.get(i).findElement(singleProductAddToCartButton));
+            if (i != productsNumber - 1) {
+                click(driver.findElement(continueButton));
+            }
+        }
+        return this;
+
     }
 }

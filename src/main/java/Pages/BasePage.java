@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public class BasePage {
     private static final Logger logger = Logger.getLogger(BasePage.class.getName());
-    protected WebDriver driver;
+    protected static WebDriver driver;
     protected WebDriverWait wait;
 
     public BasePage(WebDriver driver) {
