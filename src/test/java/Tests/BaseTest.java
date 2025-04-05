@@ -2,6 +2,7 @@ package Tests;
 
 
 import Config.ConfigReader;
+import Pages.HomePage;
 import Utils.BrowserFactory;
 import Utils.listeners.LoggingListener;
 import Utils.listeners.ScreenshotListener;
@@ -15,12 +16,13 @@ import org.testng.asserts.SoftAssert;
 public class BaseTest {
     protected WebDriver driver;
     protected SoftAssert softAssert = new SoftAssert();
+    protected HomePage homePage;
 
     @BeforeMethod
     public void setUp() {
         this.driver = BrowserFactory.getDriver();
         driver.get(ConfigReader.getBaseUrl());
-
+        homePage = new HomePage(driver);
     }
 
     @AfterMethod

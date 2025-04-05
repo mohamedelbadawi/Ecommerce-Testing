@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public class BasePage {
     private static final Logger logger = Logger.getLogger(BasePage.class.getName());
-    protected static WebDriver driver;
+    protected WebDriver driver;
     protected WebDriverWait wait;
 
     public BasePage(WebDriver driver) {
@@ -75,6 +75,7 @@ public class BasePage {
 
     protected void click(WebElement element) {
         try {
+            scrollToElement(element);
             waitForClickable(element);
             element.click();
             logger.info("Clicked on element: " + element);

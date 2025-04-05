@@ -10,6 +10,9 @@ public class ProductDetailsPage extends BasePage {
     private final By availability = By.xpath("//div[contains(@class, 'product-information')]/p[b[contains(text(),'Availability')]]");
     private final By condition = By.xpath("//div[contains(@class, 'product-information')]/p[b[contains(text(),'Condition:')]]");
     private final By brand = By.xpath("//div[contains(@class, 'product-information')]/p[b[contains(text(),'Brand:')]]");
+    private final By quantity = By.id("quantity");
+    private final By addToCartBtn = By.cssSelector(".cart");
+    private final By viewCartButton = By.cssSelector("#cartModal .modal-body a");
 
     public ProductDetailsPage(WebDriver driver) {
         super(driver);
@@ -37,6 +40,25 @@ public class ProductDetailsPage extends BasePage {
 
     public boolean isBrandDisplayed() {
         return isElementDisplayed(brand);
+    }
+
+    public boolean isProductDetailsPageDisplayed() {
+        return getPageTitle().contains("Product Details");
+    }
+
+    public ProductDetailsPage setQuantity(String qty) {
+        sendKeys(driver.findElement(quantity), qty);
+        return this;
+    }
+
+    public ProductDetailsPage addToCart() {
+        click(driver.findElement(addToCartBtn));
+        return this;
+    }
+
+    public ProductDetailsPage viewCart() {
+        click(driver.findElement(viewCartButton));
+        return this;
     }
 
 }
