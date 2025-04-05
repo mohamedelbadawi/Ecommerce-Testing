@@ -74,7 +74,7 @@ public class CartTest extends BaseTest {
         softAssert.assertTrue(signupPage.isSignupTitleDisplayed(), "Signup page title is missing!");
         // user registration
         signupPage.fillSignupForm(user);
-        isLoggedIn=homePage.isUserLoggedIn();
+        isLoggedIn = homePage.isUserLoggedIn();
         softAssert.assertTrue(isLoggedIn, "User is not logged in");
 //        Navigate back to cart and continue checkout
         homePage.clickCartButton();
@@ -84,6 +84,20 @@ public class CartTest extends BaseTest {
         checkoutPage.placeOrder(checkoutData);
         Assert.assertTrue(checkoutPage.isOrderPlacedSuccessfully(), "Order not placed successfully");
 //        softAssert.assertAll();
+    }
+
+    @Test(dataProvider = "userAndCheckoutData", description = "Test Case 15: Place Order: Register before Checkout")
+    public void TestPlaceOrderAndRegisterBeforeCheckout(UserData user, CheckoutData checkoutData) {
+        softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
+        homePage.clickLoginRegisterUrl();
+        signupPage.fillSignupForm(user);
+        isLoggedIn = homePage.isUserLoggedIn();
+        softAssert.assertTrue(isLoggedIn, "User is not logged in");
+        addToCart();
+        homePage.clickCartButton();
+        cartPage.clickCheckoutButton();
+        checkoutPage.placeOrder(checkoutData);
+        Assert.assertTrue(checkoutPage.isOrderPlacedSuccessfully(), "Order not placed successfully");
     }
 
 
