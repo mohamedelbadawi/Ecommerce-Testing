@@ -25,8 +25,18 @@ public class BaseTest {
         homePage = new HomePage(driver);
     }
 
+
+    protected void closeCurrentTab() {
+        driver.close();
+    }
+
+    protected void switchBackToOriginalWindow(String originalWindow) {
+        driver.switchTo().window(originalWindow);
+    }
+
+
     @AfterMethod
     public void tearDown() {
-        BrowserFactory.quit();
+//        BrowserFactory.quit();
     }
 }

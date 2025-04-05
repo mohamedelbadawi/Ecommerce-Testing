@@ -117,4 +117,22 @@ public class BasePage {
             logger.log(Level.SEVERE, "Failed to scroll to element: " + element, e);
         }
     }
+
+    protected void openLinkInNewTab(WebElement element) {
+        String url = element.getAttribute("href");
+        String openLinkInNewTabScript = "window.open('" + url + "', '_blank');";
+        ((JavascriptExecutor) driver).executeScript(openLinkInNewTabScript);
+    }
+
+    public void switchToNewTab(String originalWindow) {
+        for (String windowHandle : driver.getWindowHandles()) {
+            if (!windowHandle.equals(originalWindow)) {
+                driver.switchTo().window(windowHandle);
+                break;
+            }
+        }
+    }
+
+
+
 }

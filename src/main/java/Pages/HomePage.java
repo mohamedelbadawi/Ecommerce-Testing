@@ -20,6 +20,8 @@ public class HomePage extends BasePage {
     private final By subscriptionSuccessAlert = By.id("success-subscribe");
     private final By firstProductViewButton = By.xpath("(//div[@class='col-sm-4']//a[contains(text(),'View Product')])[1]");
     private final By viewCartViaModal = By.cssSelector("#cartModal .modal-body a");
+    private final By categorySection = By.cssSelector(".left-sidebar .category-products");
+    private final By productsTitle = By.cssSelector(".features_items .title");
 
     public HomePage(WebDriver driver) {
         super(driver);
@@ -93,4 +95,12 @@ public class HomePage extends BasePage {
         return !classes.contains("hide");
     }
 
+    public boolean isCategoryProductsSectionDisplayed() {
+        return isElementDisplayed(categorySection);
+    }
+
+    public String getProductsTitle() {
+        waitForVisible(driver.findElement(productsTitle));
+        return driver.findElement(productsTitle).getText().trim();
+    }
 }
