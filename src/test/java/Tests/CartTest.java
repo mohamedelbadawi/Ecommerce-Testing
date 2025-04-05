@@ -131,6 +131,16 @@ public class CartTest extends BaseTest {
         Assert.assertTrue(checkoutPage.isOrderPlacedSuccessfully(), "Order not placed successfully");
     }
 
+
+    @Test(description = "Test Case 17: Remove Products From Cart")
+    public void testRemoveProductsFromCart() {
+        softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
+        addToCart();
+        homePage.clickCartButton();
+        cartPage.removeCartFirstProduct();
+        Assert.assertTrue(cartPage.isCartEmpty(), "Cart is not empty and the product not removed");
+    }
+
     private void addToCart() {
         productsPage.clickFirstProduct();
         productDetailsPage.setQuantity("1").addToCart().viewCart();

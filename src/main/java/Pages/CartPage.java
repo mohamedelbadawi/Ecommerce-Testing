@@ -14,6 +14,8 @@ public class CartPage extends BasePage {
     private final By productTotalPrice = By.cssSelector(".cart_total_price");
     private final By checkoutButton = By.cssSelector(".check_out");
     private final By loginButton = By.cssSelector("#checkoutModal a");
+    private final By cartProductDeleteButton = By.cssSelector(".cart_quantity_delete");
+    private final By cartIsEmpty = By.id("empty_cart");
 
     public CartPage(WebDriver driver) {
         super(driver);
@@ -62,8 +64,23 @@ public class CartPage extends BasePage {
         return this;
     }
 
+    public CartPage removeCartFirstProduct() {
+        List<WebElement> cartProducts = getCart();
+        click(cartProducts.getFirst().findElement(cartProductDeleteButton));
+        return this;
+    }
+
     public CartPage clickLoginButton() {
         click(driver.findElement(loginButton));
         return this;
+    }
+
+    public CartPage clickCartProductDeleteButton() {
+        click(driver.findElement(cartProductDeleteButton));
+        return this;
+    }
+
+    public boolean isCartEmpty() {
+        return isElementDisplayed(cartIsEmpty);
     }
 }
