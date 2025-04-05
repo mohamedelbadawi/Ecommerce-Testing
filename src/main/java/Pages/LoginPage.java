@@ -40,4 +40,8 @@ public class LoginPage extends BasePage {
         return driver.findElement(errorMessage).isDisplayed();
     }
 
+    public LoginPage login(String email, String password) {
+        return enterLoginEmail(email).enterLoginPassword(password).clickLoginButton();
+    }
+
 }

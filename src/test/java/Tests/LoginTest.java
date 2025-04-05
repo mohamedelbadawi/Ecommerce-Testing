@@ -49,7 +49,7 @@ public class LoginTest extends BaseTest {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
         homePage.clickLoginRegisterUrl();
         softAssert.assertTrue(loginPage.isLoginTitleDisplayed(), "Login title is not displayed");
-        loginPage.enterLoginEmail(email).enterLoginPassword(password).clickLoginButton();
+        loginPage.login(email, password);
         Assert.assertTrue(loginPage.isErrorMessageDisplayed(), "Failed to track error message");
     }
 

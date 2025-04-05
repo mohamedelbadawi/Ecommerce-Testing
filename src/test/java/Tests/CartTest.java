@@ -1,9 +1,11 @@
 package Tests;
 
 import Data.CheckoutData;
-import Data.UserData;
+import Data.UserLoginData;
+import Data.UserRegistrationData;
 import Loaders.CheckoutDataLoader;
-import Loaders.UserDataLoader;
+import Loaders.UserLoginDataLoader;
+import Loaders.UserRegistrationDataLoader;
 import Pages.*;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -20,6 +22,7 @@ public class CartTest extends BaseTest {
     protected ProductDetailsPage productDetailsPage;
     protected SignupPage signupPage;
     protected CheckoutPage checkoutPage;
+    protected LoginPage loginPage;
     private boolean isLoggedIn;
 
     @BeforeMethod
@@ -30,12 +33,12 @@ public class CartTest extends BaseTest {
         productDetailsPage = new ProductDetailsPage(driver);
         signupPage = new SignupPage(driver);
         checkoutPage = new CheckoutPage(driver);
-
+        loginPage = new LoginPage(driver);
     }
 
     @DataProvider(name = "userAndCheckoutData")
     public Object[][] getUserAndCheckout() {
-        List<UserData> users = UserDataLoader.loadUsersFromJson();
+        List<UserRegistrationData> users = UserRegistrationDataLoader.loadUsersFromJson();
         List<CheckoutData> checkoutData = CheckoutDataLoader.loadPaymentDataFromJson();
         int size = Math.min(users.size(), checkoutData.size());
         Object[][] data = new Object[size][2];
@@ -46,6 +49,21 @@ public class CartTest extends BaseTest {
 
         return data;
     }
+
+    @DataProvider(name = "loginDataAndCheckoutData")
+    public Object[][] getLoginDataAndCheckout() {
+        List<UserLoginData> users = UserLoginDataLoader.loadLoginDataFromJson();
+        List<CheckoutData> checkoutData = CheckoutDataLoader.loadPaymentDataFromJson();
+        int size = Math.min(users.size(), checkoutData.size());
+        Object[][] data = new Object[size][2];
+        for (int i = 0; i < size; i++) {
+            data[i][0] = users.get(i);
+            data[i][1] = checkoutData.get(i);
+        }
+
+        return data;
+    }
+
 
     @Test(description = "Test Case 12: Add Products in Cart")
     public void testAddProductsToCart() {
@@ -65,7 +83,7 @@ public class CartTest extends BaseTest {
     }
 
     @Test(dataProvider = "userAndCheckoutData")
-    public void TestPlaceOrderAndRegisterWhileCheckout(UserData user, CheckoutData checkoutData) {
+    public void TestPlaceOrderAndRegisterWhileCheckout(UserRegistrationData user, CheckoutData checkoutData) {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
         // Add product to cart
         addToCart();
@@ -87,7 +105,7 @@ public class CartTest extends BaseTest {
     }
 
     @Test(dataProvider = "userAndCheckoutData", description = "Test Case 15: Place Order: Register before Checkout")
-    public void TestPlaceOrderAndRegisterBeforeCheckout(UserData user, CheckoutData checkoutData) {
+    public void TestPlaceOrderAndRegisterBeforeCheckout(UserRegistrationData user, CheckoutData checkoutData) {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
         homePage.clickLoginRegisterUrl();
         signupPage.fillSignupForm(user);
@@ -100,6 +118,18 @@ public class CartTest extends BaseTest {
         Assert.assertTrue(checkoutPage.isOrderPlacedSuccessfully(), "Order not placed successfully");
     }
 
+    @Test(description = "Test Case 16: Place Order: Login before Checkout", dataProvider = "loginDataAndCheckoutData")
+    public void TestLoginBeforeCheckout(UserLoginData user, CheckoutData checkoutData) {
+        homePage.clickLoginRegisterUrl();
+        loginPage.login(user.getEmail(), user.getPassword());
+        addToCart();
+        homePage.clickCartButton();
+        cartPage.clickCheckoutButton();
+        softAssert.assertTrue(checkoutPage.isAddressDetailsDisplayed(), "Address details page is not displayed");
+        softAssert.assertTrue(checkoutPage.isReviewYourOrderDisplayed(), "Review section is not displayed");
+        checkoutPage.placeOrder(checkoutData);
+        Assert.assertTrue(checkoutPage.isOrderPlacedSuccessfully(), "Order not placed successfully");
+    }
 
     private void addToCart() {
         productsPage.clickFirstProduct();

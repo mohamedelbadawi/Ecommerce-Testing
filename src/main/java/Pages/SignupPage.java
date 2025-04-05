@@ -1,6 +1,6 @@
 package Pages;
 
-import Data.UserData;
+import Data.UserRegistrationData;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
@@ -135,7 +135,7 @@ public class SignupPage extends BasePage {
         return driver.findElement(emailAlreadyExistsMessage).isDisplayed();
     }
 
-    public SignupPage fillSignupForm(UserData user) {
+    public SignupPage fillSignupForm(UserRegistrationData user) {
         return enterSignupName(user.getName())
                 .enterSignupEmail(user.getEmail())
                 .clickSignupButton()

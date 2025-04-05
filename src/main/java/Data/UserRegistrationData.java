@@ -2,7 +2,7 @@ package Data;
 
 import Utils.HelperFunctions;
 
-public class UserData {
+public class UserRegistrationData {
 
     private String name;
     private String email;

@@ -33,7 +33,7 @@ public class HelperFunctions {
 
     public static <T> List<T> loadFromJson(String filePath, Class<T> clazz) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        // Load the JSON file into a List of UserData objects
+        // Load the JSON file into a List of UserRegistrationData objects
         List<T> data = objectMapper.readValue(new File(filePath),
                 objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
         return data;

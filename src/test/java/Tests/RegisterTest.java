@@ -1,7 +1,7 @@
 package Tests;
 
-import Data.UserData;
-import Loaders.UserDataLoader;
+import Data.UserRegistrationData;
+import Loaders.UserRegistrationDataLoader;
 import Pages.HomePage;
 import Pages.SignupPage;
 import org.testng.Assert;
@@ -26,7 +26,7 @@ public class RegisterTest extends BaseTest {
 
     @DataProvider(name = "userData")
     public Object[][] getUserData() {
-        List<UserData> users = UserDataLoader.loadUsersFromJson();
+        List<UserRegistrationData> users = UserRegistrationDataLoader.loadUsersFromJson();
         return users.stream()
                 .map(user -> new Object[]{user})
                 .toArray(Object[][]::new);
@@ -34,7 +34,7 @@ public class RegisterTest extends BaseTest {
 
     @Test(dataProvider = "userData", description = "Test Case 1: Register User")
 
-    public void testRegisterUser(UserData user) {
+    public void testRegisterUser(UserRegistrationData user) {
 
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not displayed!");
         // Open register page
@@ -66,7 +66,7 @@ public class RegisterTest extends BaseTest {
     }
 
     @Test(dataProvider = "userData")
-    protected void test(UserData user) throws IOException {
+    protected void test(UserRegistrationData user) throws IOException {
         System.out.println(user.getEmail());
     }
 
