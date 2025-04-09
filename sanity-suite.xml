@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="SanityTestSuite">
+    <test name="LoginTests">
+        <classes>
+            <class name="Tests.LoginTest"/>
+        </classes>
+    </test>
+    <test name="ProductTests">
+        <classes>
+            <class name="Tests.ProductTest"/>
+        </classes>
+    </test>
+    <test name="CartTests">
+        <classes>
+            <class name="Tests.CartTest"/>
+        </classes>
+    </test>
+    <test name="CheckoutTests">
+        <classes>
+            <class name="Tests.CheckoutTest"/>
+        </classes>
+    </test>
+    <test name="RegisterTests">
+        <classes>
+            <class name="Tests.RegisterTest"/>
+        </classes>
+    </test>
+</suite>
