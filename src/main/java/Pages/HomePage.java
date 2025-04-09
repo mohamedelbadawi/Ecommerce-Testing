@@ -22,6 +22,8 @@ public class HomePage extends BasePage {
     private final By viewCartViaModal = By.cssSelector("#cartModal .modal-body a");
     private final By categorySection = By.cssSelector(".left-sidebar .category-products");
     private final By productsTitle = By.cssSelector(".features_items .title");
+    private final By addToCartButtonForRecommendedProducts = By.cssSelector(".recommended_items .add-to-cart");
+    private final By recommendedProductsSection = By.cssSelector(".recommended_items");
 
     public HomePage(WebDriver driver) {
         super(driver);
@@ -102,5 +104,14 @@ public class HomePage extends BasePage {
     public String getProductsTitle() {
         waitForVisible(driver.findElement(productsTitle));
         return driver.findElement(productsTitle).getText().trim();
+    }
+
+    public HomePage clickAddToCartButtonForRecommendedProducts() {
+        click(driver.findElement(addToCartButtonForRecommendedProducts));
+        return this;
+    }
+
+    public boolean isRecommendedProductsSectionDisplayed() {
+        return isElementDisplayed(recommendedProductsSection);
     }
 }

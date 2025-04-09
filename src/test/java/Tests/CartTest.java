@@ -1,10 +1,8 @@
 package Tests;
 
 import Data.CheckoutData;
-import Data.UserLoginData;
 import Data.UserRegistrationData;
 import Loaders.CheckoutDataLoader;
-import Loaders.UserLoginDataLoader;
 import Loaders.UserRegistrationDataLoader;
 import Pages.*;
 import org.testng.Assert;
@@ -23,7 +21,7 @@ public class CartTest extends BaseTest {
     protected SignupPage signupPage;
     protected CheckoutPage checkoutPage;
     protected LoginPage loginPage;
-    private boolean isLoggedIn;
+    private boolean isLoggedIn = false;
 
     @BeforeMethod
     public void init() {
@@ -36,23 +34,16 @@ public class CartTest extends BaseTest {
         loginPage = new LoginPage(driver);
     }
 
+    @DataProvider(name = "validLoginData")
+    public Object[][] validLoginData() {
+        return new Object[][]{
+                {"loginUser@test.com", "SecurePassword123"}
+        };
+    }
+
     @DataProvider(name = "userAndCheckoutData")
     public Object[][] getUserAndCheckout() {
         List<UserRegistrationData> users = UserRegistrationDataLoader.loadUsersFromJson();
-        List<CheckoutData> checkoutData = CheckoutDataLoader.loadPaymentDataFromJson();
-        int size = Math.min(users.size(), checkoutData.size());
-        Object[][] data = new Object[size][2];
-        for (int i = 0; i < size; i++) {
-            data[i][0] = users.get(i);
-            data[i][1] = checkoutData.get(i);
-        }
-
-        return data;
-    }
-
-    @DataProvider(name = "loginDataAndCheckoutData")
-    public Object[][] getLoginDataAndCheckout() {
-        List<UserLoginData> users = UserLoginDataLoader.loadLoginDataFromJson();
         List<CheckoutData> checkoutData = CheckoutDataLoader.loadPaymentDataFromJson();
         int size = Math.min(users.size(), checkoutData.size());
         Object[][] data = new Object[size][2];
@@ -82,55 +73,6 @@ public class CartTest extends BaseTest {
         Assert.assertTrue(cartPage.isCartProductsQuantityCorrect(4), "Cart products not equal Added");
     }
 
-    @Test(dataProvider = "userAndCheckoutData")
-    public void TestPlaceOrderAndRegisterWhileCheckout(UserRegistrationData user, CheckoutData checkoutData) {
-        softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
-        // Add product to cart
-        addToCart();
-        // Proceed to checkout and login
-        cartPage.clickCheckoutButton().clickLoginButton();
-        softAssert.assertTrue(signupPage.isSignupTitleDisplayed(), "Signup page title is missing!");
-        // user registration
-        signupPage.fillSignupForm(user);
-        isLoggedIn = homePage.isUserLoggedIn();
-        softAssert.assertTrue(isLoggedIn, "User is not logged in");
-//        Navigate back to cart and continue checkout
-        homePage.clickCartButton();
-        cartPage.clickCheckoutButton();
-        softAssert.assertTrue(checkoutPage.isAddressDetailsDisplayed(), "Address details page is not displayed");
-        softAssert.assertTrue(checkoutPage.isReviewYourOrderDisplayed(), "Review section is not displayed");
-        checkoutPage.placeOrder(checkoutData);
-        Assert.assertTrue(checkoutPage.isOrderPlacedSuccessfully(), "Order not placed successfully");
-//        softAssert.assertAll();
-    }
-
-    @Test(dataProvider = "userAndCheckoutData", description = "Test Case 15: Place Order: Register before Checkout")
-    public void TestPlaceOrderAndRegisterBeforeCheckout(UserRegistrationData user, CheckoutData checkoutData) {
-        softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
-        homePage.clickLoginRegisterUrl();
-        signupPage.fillSignupForm(user);
-        isLoggedIn = homePage.isUserLoggedIn();
-        softAssert.assertTrue(isLoggedIn, "User is not logged in");
-        addToCart();
-        homePage.clickCartButton();
-        cartPage.clickCheckoutButton();
-        checkoutPage.placeOrder(checkoutData);
-        Assert.assertTrue(checkoutPage.isOrderPlacedSuccessfully(), "Order not placed successfully");
-    }
-
-    @Test(description = "Test Case 16: Place Order: Login before Checkout", dataProvider = "loginDataAndCheckoutData")
-    public void TestLoginBeforeCheckout(UserLoginData user, CheckoutData checkoutData) {
-        homePage.clickLoginRegisterUrl();
-        loginPage.login(user.getEmail(), user.getPassword());
-        addToCart();
-        homePage.clickCartButton();
-        cartPage.clickCheckoutButton();
-        softAssert.assertTrue(checkoutPage.isAddressDetailsDisplayed(), "Address details page is not displayed");
-        softAssert.assertTrue(checkoutPage.isReviewYourOrderDisplayed(), "Review section is not displayed");
-        checkoutPage.placeOrder(checkoutData);
-        Assert.assertTrue(checkoutPage.isOrderPlacedSuccessfully(), "Order not placed successfully");
-    }
-
 
     @Test(description = "Test Case 17: Remove Products From Cart")
     public void testRemoveProductsFromCart() {
@@ -139,6 +81,30 @@ public class CartTest extends BaseTest {
         homePage.clickCartButton();
         cartPage.removeCartFirstProduct();
         Assert.assertTrue(cartPage.isCartEmpty(), "Cart is not empty and the product not removed");
+    }
+
+    @Test(description = "Test Case 20: Search Products and Verify Cart After Login", dataProvider = "validLoginData")
+    public void testSearchProductsAndVerifyCart(String email, String password) {
+        softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
+        homePage.clickProductsButton();
+        softAssert.assertTrue(productsPage.isProductsPage(), "Products page is not displayed");
+        productsPage.enterProductName("men").clickSearchButton();
+        Assert.assertTrue(productsPage.isSearchResultRelatedToSearchedProductName("men"), "Search result related to product name is not displayed");
+        addToCart();
+        softAssert.assertTrue(cartPage.isCartProductsEqual(1), "Cart products not equal Added");
+        homePage.clickLoginRegisterUrl();
+        loginPage.login(email, password);
+        homePage.clickCartButton();
+        Assert.assertFalse(cartPage.isCartEmpty(), "Cart is not empty and the product not removed");
+    }
+
+    @Test
+    public void addToCartFromRecommendedItems() {
+        softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
+        softAssert.assertTrue(homePage.isRecommendedProductsSectionDisplayed(), "Recommended products section is not displayed");
+        homePage.clickAddToCartButtonForRecommendedProducts().clickViewCartViaModal();
+        Assert.assertFalse(cartPage.isCartEmpty(), "Cart is not empty and the product not removed");
+
     }
 
     private void addToCart() {

@@ -22,6 +22,7 @@ public class BaseTest {
     public void setUp() {
         this.driver = BrowserFactory.getDriver();
         driver.get(ConfigReader.getBaseUrl());
+        BrowserFactory.refreshIfErrorDetected();
         homePage = new HomePage(driver);
     }
 

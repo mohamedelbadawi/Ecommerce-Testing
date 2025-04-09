@@ -10,6 +10,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
 import java.time.Duration;
+import java.util.Objects;
 
 public class BrowserFactory {
     private static WebDriver driver;
@@ -49,6 +50,26 @@ public class BrowserFactory {
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(implicitWait));
         }
         return driver;
+    }
+
+    public static void refreshIfErrorDetected() {
+        try {
+            String pageSource = Objects.requireNonNull(driver.getPageSource()).toLowerCase();
+            String title = Objects.requireNonNull(driver.getTitle()).toLowerCase();
+
+            if (pageSource.contains("error 400") ||
+                    pageSource.contains("error 500") ||
+                    pageSource.contains("http error") ||
+                    pageSource.contains("internal server error") ||
+                    pageSource.contains("bad request") ||
+                    title.contains("error")) {
+
+                System.out.println("⚠️ HTTP error detected. Refreshing the page...");
+                driver.navigate().refresh();
+            }
+        } catch (Exception e) {
+            System.out.println("❌ Error while checking page status: " + e.getMessage());
+        }
     }
 
     public static void quit() {

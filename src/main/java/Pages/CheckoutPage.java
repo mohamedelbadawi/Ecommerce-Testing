@@ -16,6 +16,9 @@ public class CheckoutPage extends BasePage {
     private final By cvcInput = By.name("cvc");
     private final By payButton = By.id("submit");
     private final By orderPlacedSuccessfully = By.cssSelector("h2[data-qa='order-placed']");
+    private final By deliveryAddress = By.cssSelector("#address_delivery li:nth-child(3)");
+    private final By billingAddress = By.cssSelector("#address_invoice li:nth-child(3)");
+    private final By downloadInvoiceButton = By.cssSelector(".check_out");
 
     public CheckoutPage(WebDriver driver) {
         super(driver);
@@ -71,6 +74,19 @@ public class CheckoutPage extends BasePage {
 
     public boolean isOrderPlacedSuccessfully() {
         return isElementDisplayed(orderPlacedSuccessfully);
+    }
+
+    public String getDeliveryAddress() {
+        return driver.findElement(deliveryAddress).getText().trim();
+    }
+
+    public String getBillingAddress() {
+        return driver.findElement(billingAddress).getText().trim();
+    }
+
+    public CheckoutPage clickDownloadInvoiceButton() {
+        click(driver.findElement(downloadInvoiceButton));
+        return this;
     }
 
     public CheckoutPage placeOrder(CheckoutData checkoutData) {

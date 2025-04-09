@@ -13,6 +13,12 @@ public class ProductDetailsPage extends BasePage {
     private final By quantity = By.id("quantity");
     private final By addToCartBtn = By.cssSelector(".cart");
     private final By viewCartButton = By.cssSelector("#cartModal .modal-body a");
+    private final By writeYourReviewTitle = By.cssSelector(".shop-details-tab .nav a");
+    private final By reviewNameInput = By.id("name");
+    private final By reviewEmailInput = By.id("email");
+    private final By reviewDescriptionInput = By.id("review");
+    private final By reviewSubmitButton = By.id("button-review");
+    private final By reviewSuccessMessage = By.cssSelector("#review-section .alert-success");
 
     public ProductDetailsPage(WebDriver driver) {
         super(driver);
@@ -59,6 +65,33 @@ public class ProductDetailsPage extends BasePage {
     public ProductDetailsPage viewCart() {
         click(driver.findElement(viewCartButton));
         return this;
+    }
+
+    public boolean isWriteYourReviewTitleDisplayed() {
+        return isElementDisplayed(writeYourReviewTitle);
+    }
+
+    public ProductDetailsPage enterReviewName(String reviewName) {
+        sendKeys(driver.findElement(reviewNameInput), reviewName);
+        return this;
+    }
+
+    public ProductDetailsPage enterReviewEmail(String reviewEmail) {
+        sendKeys(driver.findElement(reviewEmailInput), reviewEmail);
+        return this;
+    }
+
+    public ProductDetailsPage enterReviewDescription(String reviewDescription) {
+        sendKeys(driver.findElement(reviewDescriptionInput), reviewDescription);
+        return this;
+    }
+
+    public ProductDetailsPage clickReviewSubmitButton() {
+        click(driver.findElement(reviewSubmitButton));
+        return this;
+    }
+    public boolean isReviewSuccessMessageDisplayed() {
+        return isElementDisplayed(reviewSuccessMessage);
     }
 
 }
