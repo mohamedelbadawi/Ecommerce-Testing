@@ -15,10 +15,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ScreenshotListener implements ITestListener {
-    WebDriver driver = BrowserFactory.getDriver();
+
 
     @Override
     public void onTestFailure(ITestResult result) {
+        WebDriver driver = BrowserFactory.getDriver();
         if (driver == null) {
             System.out.println("Driver is null, cannot take screenshot.");
             return;

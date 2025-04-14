@@ -149,6 +149,6 @@ public class SignupPage extends BasePage {
                 .selectCountry(user.getCountry())
                 .enterLocationDetails(user.getState(), user.getCity(), user.getZipCode())
                 .enterMobileNumber(user.getMobileNumber())
-                .clickCreateAccount().clickContinueButton();
+                .clickCreateAccount();
     }
 }

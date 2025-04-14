@@ -8,8 +8,12 @@ import Loaders.UserLoginDataLoader;
 import Loaders.UserRegistrationDataLoader;
 import Pages.*;
 import Utils.HelperFunctions;
+import io.qameta.allure.*;
 import org.testng.Assert;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 import java.util.List;
 
@@ -23,6 +27,7 @@ public class CheckoutTest extends BaseTest {
     private CartPage cartPage;
     private SignupPage signupPage;
     private boolean isLoggedIn = false;
+    private boolean isAccountDeleted = false;
 
     @BeforeMethod
     public void init() {
@@ -33,6 +38,8 @@ public class CheckoutTest extends BaseTest {
         checkoutPage = new CheckoutPage(driver);
         loginPage = new LoginPage(driver);
         signupPage = new SignupPage(driver);
+        isLoggedIn = false;
+        isAccountDeleted = false;
     }
 
     @DataProvider(name = "loginDataAndCheckoutData")
@@ -45,7 +52,6 @@ public class CheckoutTest extends BaseTest {
             data[i][0] = users.get(i);
             data[i][1] = checkoutData.get(i);
         }
-
         return data;
     }
 
@@ -53,55 +59,70 @@ public class CheckoutTest extends BaseTest {
     public Object[][] getUserAndCheckout() {
         List<UserRegistrationData> users = UserRegistrationDataLoader.loadUsersFromJson();
         List<CheckoutData> checkoutData = CheckoutDataLoader.loadPaymentDataFromJson();
+        assert users != null;
+        assert checkoutData != null;
         int size = Math.min(users.size(), checkoutData.size());
         Object[][] data = new Object[size][2];
         for (int i = 0; i < size; i++) {
             data[i][0] = users.get(i);
             data[i][1] = checkoutData.get(i);
         }
-
         return data;
     }
 
     @Test(description = "Test Case 16: Place Order: Login before Checkout", dataProvider = "loginDataAndCheckoutData")
+    @Feature("Checkout Process")
+    @Story("User places an order after logging in")
+    @Severity(SeverityLevel.CRITICAL)
     public void testLoginBeforeCheckout(UserLoginData user, CheckoutData checkoutData) {
-        homePage.clickLoginRegisterUrl();
-        loginPage.login(user.getEmail(), user.getPassword());
+        softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
+
+        login(user);
+        isLoggedIn = true;
+
         addToCart();
+
         homePage.clickCartButton();
         cartPage.clickCheckoutButton();
+
         softAssert.assertTrue(checkoutPage.isAddressDetailsDisplayed(), "Address details page is not displayed");
         softAssert.assertTrue(checkoutPage.isReviewYourOrderDisplayed(), "Review section is not displayed");
+
         checkoutPage.placeOrder(checkoutData);
+
         Assert.assertTrue(checkoutPage.isOrderPlacedSuccessfully(), "Order not placed successfully");
+        logoutAndMarkDeleted();
     }
 
     @Test(dataProvider = "userAndCheckoutData")
+    @Severity(SeverityLevel.NORMAL)
+    @Story("User places an order after registration during checkout")
+    @Feature("Checkout Process")
     public void testPlaceOrderAndRegisterWhileCheckout(UserRegistrationData user, CheckoutData checkoutData) {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
-        // Add product to cart
         addToCart();
-        // Proceed to checkout and login
         cartPage.clickCheckoutButton().clickLoginButton();
         softAssert.assertTrue(signupPage.isSignupTitleDisplayed(), "Signup page title is missing!");
-        // user registration
-        signupPage.fillSignupForm(user);
+        signupPage.fillSignupForm(user).clickContinueButton();
         isLoggedIn = homePage.isUserLoggedIn();
         softAssert.assertTrue(isLoggedIn, "User is not logged in");
-//        Navigate back to cart and continue checkout
         homePage.clickCartButton();
         cartPage.clickCheckoutButton();
         softAssert.assertTrue(checkoutPage.isAddressDetailsDisplayed(), "Address details page is not displayed");
         softAssert.assertTrue(checkoutPage.isReviewYourOrderDisplayed(), "Review section is not displayed");
         checkoutPage.placeOrder(checkoutData);
         Assert.assertTrue(checkoutPage.isOrderPlacedSuccessfully(), "Order not placed successfully");
+        logoutAndMarkDeleted();
     }
 
     @Test(dataProvider = "userAndCheckoutData", description = "Test Case 15: Place Order: Register before Checkout")
+    @Severity(SeverityLevel.NORMAL)
+    @Story("User places an order after registration before checkout")
+    @Feature("Checkout Process")
     public void testPlaceOrderAndRegisterBeforeCheckout(UserRegistrationData user, CheckoutData checkoutData) {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
         homePage.clickLoginRegisterUrl();
-        signupPage.fillSignupForm(user);
+        signupPage.fillSignupForm(user).clickContinueButton();
         isLoggedIn = homePage.isUserLoggedIn();
         softAssert.assertTrue(isLoggedIn, "User is not logged in");
         addToCart();
@@ -112,44 +133,65 @@ public class CheckoutTest extends BaseTest {
     }
 
     @Test(description = "Test Case 23: Verify address details in checkout page", dataProvider = "userAndCheckoutData")
+    @Severity(SeverityLevel.NORMAL)
+    @Feature("Checkout Process")
+    @Story("User verifies address details during checkout")
     public void testVerifyAddressDetails(UserRegistrationData user, CheckoutData checkoutData) {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
         homePage.clickLoginRegisterUrl();
-        signupPage.fillSignupForm(user);
+        signupPage.fillSignupForm(user).clickContinueButton();
+        isLoggedIn = homePage.isUserLoggedIn();
         homePage.clickProductsButton();
         addToCart();
         cartPage.clickCheckoutButton();
-        Assert.assertTrue(checkoutPage.getBillingAddress().equals(user.getAddress1()), "billingAddress is mismatch");
-        Assert.assertTrue(checkoutPage.getDeliveryAddress().equals(user.getAddress1()), "deliveryAddress is mismatch");
+        Assert.assertEquals(checkoutPage.getBillingAddress(), user.getAddress1(), "billingAddress is mismatch");
+        System.out.println(checkoutPage.getBillingAddress() + " " + user.getAddress1());
+        Assert.assertEquals(checkoutPage.getDeliveryAddress(), user.getAddress1(), "deliveryAddress is mismatch");
+        System.out.println(checkoutPage.getDeliveryAddress() + " " + user.getAddress1());
     }
 
-
     @Test(description = "Test Case 24: Download Invoice after purchase order", dataProvider = "userAndCheckoutData")
+    @Severity(SeverityLevel.MINOR)
+    @Feature("Checkout Process")
+    @Story("User downloads invoice after purchase")
     public void testDownloadInvoice(UserRegistrationData user, CheckoutData checkoutData) {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
         homePage.clickLoginRegisterUrl();
-        signupPage.fillSignupForm(user);
+        signupPage.fillSignupForm(user).clickContinueButton();
         isLoggedIn = homePage.isUserLoggedIn();
         softAssert.assertTrue(isLoggedIn, "User is not logged in");
         addToCart();
         homePage.clickCartButton();
         cartPage.clickCheckoutButton();
         checkoutPage.placeOrder(checkoutData).clickDownloadInvoiceButton();
-
         Assert.assertTrue(HelperFunctions.isInvoiceDownloaded(), "Invoice not downloaded");
-
+        logoutAndMarkDeleted();
     }
 
+    @Step("Logging in with email: {0}")
+    public void login(UserLoginData user) {
+        homePage.clickLoginRegisterUrl();
+        loginPage.login(user.getEmail(), user.getPassword());
+    }
+
+    @Step("Adding product to the cart")
     private void addToCart() {
         productsPage.clickFirstProduct();
         productDetailsPage.setQuantity("1").addToCart().viewCart();
     }
 
-    @AfterTest
+    @Step("Logging out and marking account for deletion")
+    private void logoutAndMarkDeleted() {
+        homePage.clickLogoutButton();
+        isLoggedIn = false;
+        isAccountDeleted = true;
+    }
+
+
+    @AfterMethod
     public void deleteAccount() {
-        if (isLoggedIn) {
+        if (isLoggedIn && !isAccountDeleted) {
             homePage.clickDeleteAccountButton();
         }
     }
-
 }

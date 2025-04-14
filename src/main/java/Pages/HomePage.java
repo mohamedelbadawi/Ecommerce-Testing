@@ -34,6 +34,7 @@ public class HomePage extends BasePage {
     }
 
     public void clickLogoutButton() {
+
         click(driver.findElement(logoutButton));
     }
 

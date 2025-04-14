@@ -2,6 +2,7 @@ package Tests;
 
 import Pages.BrandSectionPage;
 import Pages.HomePage;
+import io.qameta.allure.*;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -20,23 +21,27 @@ public class BrandTest extends BaseTest {
     }
 
     @Test(description = "View & Cart Brand Products")
+    @Description("This test verifies viewing and carting of brand products from the brand section.")
+    @Story("Brand Section Products Viewing")
+    @Severity(SeverityLevel.NORMAL)
     public void viewBrandProducts() {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
         homePage.clickProductsButton();
         softAssert.assertTrue(brandSectionPage.isBrandSectionDisplayed(), "Brand section is not displayed");
+
         List<WebElement> brandLinks = brandSectionPage.getBrandsList();
         String brandOneName = brandSectionPage.getBrandName(brandLinks.get(0));
-        brandSectionPage.clickBrandLink(brandLinks.get(0));
-        System.out.println(homePage.getProductsTitle() + " " + brandOneName);
+        clickBrandAndVerify(brandLinks.get(0), brandOneName);
+
         brandLinks = brandSectionPage.getBrandsList();
-
-        Assert.assertTrue(homePage.getProductsTitle().contains(brandOneName), "Product title is not displayed");
         String brandTwoName = brandSectionPage.getBrandName(brandLinks.get(1));
-        brandSectionPage.clickBrandLink(brandLinks.get(1));
-        System.out.println(homePage.getProductsTitle() + " " + brandTwoName);
-        Assert.assertTrue(homePage.getProductsTitle().contains(brandTwoName), "Product title is not displayed");
-
-
+        clickBrandAndVerify(brandLinks.get(1), brandTwoName);
     }
 
+    @Step("Click on the brand and verify the product title")
+    public void clickBrandAndVerify(WebElement brandLink, String brandName) {
+        brandSectionPage.clickBrandLink(brandLink);
+        System.out.println(homePage.getProductsTitle() + " " + brandName);
+        Assert.assertTrue(homePage.getProductsTitle().contains(brandName), "Product title is not displayed");
+    }
 }

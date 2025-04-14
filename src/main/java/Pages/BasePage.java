@@ -76,6 +76,7 @@ public class BasePage {
     protected void click(WebElement element) {
         try {
             scrollToElement(element);
+            waitForVisible(element);
             waitForClickable(element);
             element.click();
             logger.info("Clicked on element: " + element);
@@ -132,7 +133,6 @@ public class BasePage {
             }
         }
     }
-
 
 
 }

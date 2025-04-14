@@ -3,6 +3,7 @@ package Tests;
 import Pages.HomePage;
 import Pages.ProductDetailsPage;
 import Pages.ProductsPage;
+import io.qameta.allure.*;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -18,7 +19,6 @@ public class ReviewTest extends BaseTest {
         homePage = new HomePage(driver);
         productsPage = new ProductsPage(driver);
         productDetailsPage = new ProductDetailsPage(driver);
-
     }
 
     @DataProvider(name = "reviewData")
@@ -29,13 +29,22 @@ public class ReviewTest extends BaseTest {
     }
 
     @Test(description = "Test Case 21: Add review on product", dataProvider = "reviewData")
+    @Description("This test case verifies that a user can add a review to a product.")
+    @Story("Product Reviews")
+    @Severity(SeverityLevel.NORMAL)
     public void AddReviewOnProduct(String email, String name, String description) {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
         homePage.clickProductsButton();
         softAssert.assertTrue(productsPage.isProductsPage(), "Products page is not visible");
-        productsPage.clickFirstProduct();
-        productDetailsPage.enterReviewEmail(email).enterReviewName(name).enterReviewDescription(description).clickReviewSubmitButton();
-        Assert.assertTrue(productDetailsPage.isReviewSuccessMessageDisplayed(), "Review success message is not displayed");
 
+        productsPage.clickFirstProduct();
+
+        // Adding the review
+        productDetailsPage.enterReviewEmail(email)
+                .enterReviewName(name)
+                .enterReviewDescription(description)
+                .clickReviewSubmitButton();
+
+        Assert.assertTrue(productDetailsPage.isReviewSuccessMessageDisplayed(), "Review success message is not displayed");
     }
 }

@@ -83,4 +83,11 @@ public class CartPage extends BasePage {
     public boolean isCartEmpty() {
         return isElementDisplayed(cartIsEmpty);
     }
+
+    public void clearCart() {
+        List<WebElement> cartProducts = getCart();
+        for (WebElement product : cartProducts) {
+            click(product.findElement(cartProductDeleteButton));
+        }
+    }
 }

@@ -2,6 +2,7 @@ package Tests;
 
 import Pages.CategorySectionPage;
 import Pages.HomePage;
+import io.qameta.allure.*;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -20,6 +21,9 @@ public class CategoryTest extends BaseTest {
     }
 
     @Test(description = "Test case 18 : test all category and subcategory in home page")
+    @Description("This test case verifies that all categories and subcategories in the home page can be viewed and selected correctly.")
+    @Story("View Category and Subcategory Products")
+    @Severity(SeverityLevel.NORMAL)
     public void testViewCategoryProducts() {
         Assert.assertTrue(homePage.isCategoryProductsSectionDisplayed(), "Category products section is not displayed");
 
@@ -51,4 +55,3 @@ public class CategoryTest extends BaseTest {
         }
     }
 }
-

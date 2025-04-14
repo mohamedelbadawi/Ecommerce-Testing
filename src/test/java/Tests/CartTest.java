@@ -5,6 +5,7 @@ import Data.UserRegistrationData;
 import Loaders.CheckoutDataLoader;
 import Loaders.UserRegistrationDataLoader;
 import Pages.*;
+import io.qameta.allure.*;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -32,12 +33,13 @@ public class CartTest extends BaseTest {
         signupPage = new SignupPage(driver);
         checkoutPage = new CheckoutPage(driver);
         loginPage = new LoginPage(driver);
+        isLoggedIn = false;
     }
 
     @DataProvider(name = "validLoginData")
     public Object[][] validLoginData() {
         return new Object[][]{
-                {"loginUser@test.com", "SecurePassword123"}
+                {"YKlI4bdkA3@gmail.com", "SecurePassword123"}
         };
     }
 
@@ -55,8 +57,10 @@ public class CartTest extends BaseTest {
         return data;
     }
 
-
     @Test(description = "Test Case 12: Add Products in Cart")
+    @Description("This test case verifies that products can be added to the cart.")
+    @Story("Adding Products to Cart")
+    @Severity(SeverityLevel.NORMAL)
     public void testAddProductsToCart() {
         homePage.clickProductsButton();
         productsPage.hoverOverProductsAndAddToCart(3).clickViewCartButton();
@@ -65,6 +69,9 @@ public class CartTest extends BaseTest {
     }
 
     @Test(description = "Test Case 13: Verify Product quantity in Cart")
+    @Description("This test case verifies the quantity of a product in the cart.")
+    @Story("Verifying Product Quantity in Cart")
+    @Severity(SeverityLevel.NORMAL)
     public void testProductQuantityInCart() {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
         homePage.clickFirstProductViewButton();
@@ -73,8 +80,10 @@ public class CartTest extends BaseTest {
         Assert.assertTrue(cartPage.isCartProductsQuantityCorrect(4), "Cart products not equal Added");
     }
 
-
     @Test(description = "Test Case 17: Remove Products From Cart")
+    @Description("This test case verifies that products can be removed from the cart.")
+    @Story("Removing Products from Cart")
+    @Severity(SeverityLevel.NORMAL)
     public void testRemoveProductsFromCart() {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
         addToCart();
@@ -84,6 +93,9 @@ public class CartTest extends BaseTest {
     }
 
     @Test(description = "Test Case 20: Search Products and Verify Cart After Login", dataProvider = "validLoginData")
+    @Description("This test case verifies the search functionality and cart after login.")
+    @Story("Search Products and Verify Cart After Login")
+    @Severity(SeverityLevel.CRITICAL)
     public void testSearchProductsAndVerifyCart(String email, String password) {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
         homePage.clickProductsButton();
@@ -94,30 +106,36 @@ public class CartTest extends BaseTest {
         softAssert.assertTrue(cartPage.isCartProductsEqual(1), "Cart products not equal Added");
         homePage.clickLoginRegisterUrl();
         loginPage.login(email, password);
+        isLoggedIn = homePage.isUserLoggedIn();
         homePage.clickCartButton();
         Assert.assertFalse(cartPage.isCartEmpty(), "Cart is not empty and the product not removed");
     }
 
     @Test
+    @Description("This test case adds a product from the recommended section to the cart.")
+    @Story("Add to Cart from Recommended Items")
+    @Severity(SeverityLevel.NORMAL)
     public void addToCartFromRecommendedItems() {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
         softAssert.assertTrue(homePage.isRecommendedProductsSectionDisplayed(), "Recommended products section is not displayed");
         homePage.clickAddToCartButtonForRecommendedProducts().clickViewCartViaModal();
         Assert.assertFalse(cartPage.isCartEmpty(), "Cart is not empty and the product not removed");
-
     }
 
+    @Step("Add a product to the cart and view the cart")
     private void addToCart() {
         productsPage.clickFirstProduct();
         productDetailsPage.setQuantity("1").addToCart().viewCart();
     }
 
-
     @AfterMethod
-    public void deleteAccount() {
-        if (isLoggedIn) {
-            homePage.clickDeleteAccountButton();
+    public void clearCartProducts() {
+        if (!cartPage.isCartEmpty()) {
+            cartPage.clearCart();
         }
-    }
+        if (isLoggedIn) {
+            homePage.clickLogoutButton();
+        }
 
+    }
 }

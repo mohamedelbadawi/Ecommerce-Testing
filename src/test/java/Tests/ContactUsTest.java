@@ -2,6 +2,7 @@ package Tests;
 
 import Pages.ContactUsPage;
 import Pages.HomePage;
+import io.qameta.allure.*;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -25,12 +26,22 @@ public class ContactUsTest extends BaseTest {
     }
 
     @Test(description = "Test Case 6: Contact Us Form", dataProvider = "contactUsData")
+    @Description("This test verifies that the Contact Us form works as expected, including submitting data and handling file uploads.")
+    @Story("Contact Us Form")
+    @Severity(SeverityLevel.NORMAL)
     public void contactUsTest(String email, String name, String subject, String message, String filePath) {
         softAssert.assertTrue(homePage.isHomePage(), "Home page is not visible");
         homePage.clickContactUsButton();
         softAssert.assertTrue(contactUsPage.isGetInTouchMessageDisplayed(), "Contact Us Page is not displayed");
-        contactUsPage.enterEmail(email).enterName(name).enterSubject(subject).enterMessage(message).enterFile(filePath).clickSubmitButton().acceptConfirmationAlert();
-        Assert.assertTrue(contactUsPage.isSuccessMessageDisplayed(), "Contact Us Page is not displayed");
 
+        contactUsPage.enterEmail(email)
+                .enterName(name)
+                .enterSubject(subject)
+                .enterMessage(message)
+                .enterFile(filePath)
+                .clickSubmitButton()
+                .acceptConfirmationAlert();
+
+        Assert.assertTrue(contactUsPage.isSuccessMessageDisplayed(), "Contact Us Page is not displayed");
     }
 }
